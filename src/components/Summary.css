@@ -1,0 +1,67 @@
+.summary {
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-5);
+  margin-bottom: var(--spacing-6);
+}
+
+.summary-balance {
+  text-align: center;
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-1);
+}
+
+.summary-value {
+  display: block;
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.summary-metrics {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+  text-align: center;
+}
+
+.metric-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-value {
+  display: block;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-top: var(--spacing-1);
+}
+
+.metric-income {
+  color: var(--color-success);
+}
+
+.metric-expense {
+  color: var(--color-danger);
+}
+
+.metric-divider {
+  width: 1px;
+  background: var(--color-border);
+}
