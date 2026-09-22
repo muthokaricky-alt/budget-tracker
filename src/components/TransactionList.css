@@ -37,7 +37,7 @@
 .transaction-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--spacing-3);
   padding: var(--spacing-3) var(--spacing-4);
   background: var(--color-bg);
   border-radius: var(--radius-sm);
@@ -53,16 +53,38 @@
   border-left-color: var(--color-danger);
 }
 
+.transaction-category {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: white;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.transaction-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .transaction-description {
   font-weight: 500;
   color: var(--color-text);
   word-break: break-word;
 }
 
+.transaction-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
 .transaction-amount {
+  flex-shrink: 0;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  margin: 0 var(--spacing-3);
 }
 
 .transaction-amount.income {

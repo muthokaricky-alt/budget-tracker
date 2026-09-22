@@ -1,0 +1,16 @@
+.filter-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+
+.filter-search {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+}
