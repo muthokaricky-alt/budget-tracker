@@ -19,6 +19,3 @@ A clean, simple budget tracking application built with React and Vite. Track you
 - **Vite** - Build tool and development server
 - **CSS Variables** - Design system with consistent theming
 - **localStorage** - Client-side data persistence
-
-## Project Structure
-
