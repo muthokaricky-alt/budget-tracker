@@ -2,44 +2,46 @@ import { useRef, useState, type FormEvent } from 'react'
 import type { TransactionDraft, TransactionType } from '../types'
 import { categoriesForType } from '../constants/categories'
 import { todayISO } from '../lib/format'
-import './TransactionForm.css'
+import Icon from './Icon'
 
 interface TransactionFormProps {
   onAdd: (draft: TransactionDraft) => void
 }
 
+type FieldErrors = Partial<Record<'description' | 'amount', string>>
+
 function TransactionForm({ onAdd }: TransactionFormProps) {
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [type, setType] = useState<TransactionType>('expense')
-  const [category, setCategory] = useState('other')
+  const [category, setCategory] = useState('food')
   const [date, setDate] = useState(todayISO())
-  const [error, setError] = useState('')
+  const [errors, setErrors] = useState<FieldErrors>({})
   const descInputRef = useRef<HTMLInputElement>(null)
+  const amountInputRef = useRef<HTMLInputElement>(null)
 
   const availableCategories = categoriesForType(type)
 
   const handleTypeChange = (nextType: TransactionType) => {
     setType(nextType)
     const stillValid = categoriesForType(nextType).some((c) => c.id === category)
-    if (!stillValid) {
-      setCategory(nextType === 'income' ? 'salary' : 'other')
-    }
+    if (!stillValid) setCategory(nextType === 'income' ? 'salary' : 'food')
   }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-
     const trimmedDesc = description.trim()
-    if (!trimmedDesc) {
-      setError('Enter a description.')
+    const numAmount = parseFloat(amount)
+    const next: FieldErrors = {}
+    if (!trimmedDesc) next.description = 'Add a short description, like "Groceries".'
+    if (Number.isNaN(numAmount) || numAmount <= 0) next.amount = 'Enter an amount above zero.'
+    setErrors(next)
+    if (next.description) {
       descInputRef.current?.focus()
       return
     }
-
-    const numAmount = parseFloat(amount)
-    if (Number.isNaN(numAmount) || numAmount <= 0) {
-      setError('Enter an amount greater than zero.')
+    if (next.amount) {
+      amountInputRef.current?.focus()
       return
     }
 
@@ -49,98 +51,93 @@ function TransactionForm({ onAdd }: TransactionFormProps) {
       category,
       date,
     })
-
     setDescription('')
     setAmount('')
-    setError('')
     descInputRef.current?.focus()
   }
 
   return (
-    <section className="add-section" aria-label="Add transaction">
-      <h2 className="section-title">Add Transaction</h2>
-      <form onSubmit={handleSubmit} className="add-form">
-        <div className="type-toggle" role="radiogroup" aria-label="Transaction type">
-          <button
-            type="button"
-            className={`type-option expense ${type === 'expense' ? 'active' : ''}`}
-            aria-pressed={type === 'expense'}
-            onClick={() => handleTypeChange('expense')}
-          >
-            Expense
-          </button>
-          <button
-            type="button"
-            className={`type-option income ${type === 'income' ? 'active' : ''}`}
-            aria-pressed={type === 'income'}
-            onClick={() => handleTypeChange('income')}
-          >
-            Income
-          </button>
+    <section className="panel add-panel" aria-labelledby="add-title">
+      <h2 id="add-title" className="panel-title">Add a transaction</h2>
+      <form onSubmit={handleSubmit} className="add-form" noValidate>
+        <div className="segmented" role="radiogroup" aria-label="Type">
+          {(['expense', 'income'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              role="radio"
+              aria-checked={type === t}
+              className={`segment ${t}${type === t ? ' is-active' : ''}`}
+              onClick={() => handleTypeChange(t)}
+            >
+              {t === 'expense' ? 'Expense' : 'Income'}
+            </button>
+          ))}
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="description" className="form-label">Description</label>
+        <div className="field">
+          <label htmlFor="description">Description</label>
+          <input
+            ref={descInputRef}
+            id="description"
+            className="input"
+            autoComplete="off"
+            placeholder={type === 'expense' ? 'Groceries, rent, fare…' : 'Salary, client payment…'}
+            value={description}
+            aria-invalid={Boolean(errors.description)}
+            aria-describedby={errors.description ? 'description-error' : undefined}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          {errors.description && <p id="description-error" className="field-error">{errors.description}</p>}
+        </div>
+
+        <div className="field">
+          <label htmlFor="amount">Amount</label>
+          <div className="input-affix">
+            <span aria-hidden="true">$</span>
             <input
-              ref={descInputRef}
-              type="text"
-              id="description"
-              className="form-input"
-              placeholder="Enter description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="amount" className="form-label">Amount</label>
-            <input
-              type="number"
+              ref={amountInputRef}
               id="amount"
-              className="form-input"
-              placeholder="0.00"
+              className="input"
+              inputMode="decimal"
+              type="number"
               step="0.01"
               min="0"
+              placeholder="0.00"
               value={amount}
+              aria-invalid={Boolean(errors.amount)}
+              aria-describedby={errors.amount ? 'amount-error' : undefined}
               onChange={(e) => setAmount(e.target.value)}
-              required
             />
           </div>
+          {errors.amount && <p id="amount-error" className="field-error">{errors.amount}</p>}
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="category" className="form-label">Category</label>
-            <select
-              id="category"
-              className="form-input"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
+        <div className="field-row">
+          <div className="field">
+            <label htmlFor="category">Category</label>
+            <select id="category" className="input" value={category} onChange={(e) => setCategory(e.target.value)}>
               {availableCategories.map((c) => (
                 <option key={c.id} value={c.id}>{c.label}</option>
               ))}
             </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="date" className="form-label">Date</label>
+          <div className="field">
+            <label htmlFor="date">Date</label>
             <input
               type="date"
               id="date"
-              className="form-input"
+              className="input"
               value={date}
               max={todayISO()}
-              onChange={(e) => setDate(e.target.value)}
-              required
+              onChange={(e) => setDate(e.target.value || todayISO())}
             />
           </div>
         </div>
 
-        {error && <p className="form-error" role="alert">{error}</p>}
-
-        <button type="submit" className="button button-primary">
-          Add Transaction
+        <button type="submit" className="button button-primary button-block">
+          <Icon name="plus" />
+          Add {type}
         </button>
       </form>
     </section>
