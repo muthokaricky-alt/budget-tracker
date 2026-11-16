@@ -10,6 +10,7 @@ import TrendChart from './components/TrendChart'
 import ImportExportBar from './components/ImportExportBar'
 import Icon from './components/Icon'
 import { filterAndSortTransactions } from './lib/filters'
+import { CURRENCIES, isCurrencyCode, setActiveCurrency } from './lib/format'
 import type { Filters, Transaction } from './types'
 
 const DEFAULT_FILTERS: Filters = {
@@ -32,6 +33,11 @@ function App() {
   const deleteTransaction = useTransactionStore((s) => s.deleteTransaction)
   const clearAll = useTransactionStore((s) => s.clearAll)
   const replaceAll = useTransactionStore((s) => s.importTransactions)
+  const currency = useTransactionStore((s) => s.currency)
+  const setCurrency = useTransactionStore((s) => s.setCurrency)
+
+  // Formatting reads the active currency; set it before any child renders an amount.
+  setActiveCurrency(currency)
 
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
   const [notice, setNotice] = useState<Notice | null>(null)
@@ -72,15 +78,32 @@ function App() {
             <p>{monthLabel}</p>
           </div>
         </div>
-        <ImportExportBar
-          transactions={transactions}
-          onImport={(next, added) => {
-            const snapshot = transactions
-            replaceAll(next)
-            notify(`Imported ${added} ${added === 1 ? 'transaction' : 'transactions'}`, 'info', snapshot)
-          }}
-          onError={(m) => notify(m, 'error')}
-        />
+        <div className="topbar-tools">
+          <select
+            className="input input-sm currency-select"
+            value={currency}
+            onChange={(e) => {
+              if (isCurrencyCode(e.target.value)) setCurrency(e.target.value)
+            }}
+            aria-label="Currency"
+            title="Currency"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code} title={c.label}>
+                {c.code}
+              </option>
+            ))}
+          </select>
+          <ImportExportBar
+            transactions={transactions}
+            onImport={(next, added) => {
+              const snapshot = transactions
+              replaceAll(next)
+              notify(`Imported ${added} ${added === 1 ? 'transaction' : 'transactions'}`, 'info', snapshot)
+            }}
+            onError={(m) => notify(m, 'error')}
+          />
+        </div>
       </header>
 
       <main className="layout">

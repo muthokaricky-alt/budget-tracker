@@ -1,7 +1,7 @@
-import { useRef, useState, type FormEvent } from 'react'
+import { useRef, useState, type CSSProperties, type FormEvent } from 'react'
 import type { TransactionDraft, TransactionType } from '../types'
 import { categoriesForType } from '../constants/categories'
-import { todayISO } from '../lib/format'
+import { currencySymbol, todayISO } from '../lib/format'
 import Icon from './Icon'
 
 interface TransactionFormProps {
@@ -21,6 +21,7 @@ function TransactionForm({ onAdd }: TransactionFormProps) {
   const amountInputRef = useRef<HTMLInputElement>(null)
 
   const availableCategories = categoriesForType(type)
+  const symbol = currencySymbol()
 
   const handleTypeChange = (nextType: TransactionType) => {
     setType(nextType)
@@ -93,8 +94,8 @@ function TransactionForm({ onAdd }: TransactionFormProps) {
 
         <div className="field">
           <label htmlFor="amount">Amount</label>
-          <div className="input-affix">
-            <span aria-hidden="true">$</span>
+          <div className="input-affix" style={{ '--affix': `${symbol.length}ch` } as CSSProperties}>
+            <span aria-hidden="true">{symbol}</span>
             <input
               ref={amountInputRef}
               id="amount"

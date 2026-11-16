@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import type { Transaction } from '../types'
 import { getCategory } from '../constants/categories'
-import { formatCurrency } from '../lib/format'
+import { formatCurrency, formatCurrencyShort } from '../lib/format'
 
 interface CategoryChartProps {
   transactions: Transaction[]
@@ -63,7 +63,7 @@ function CategoryChart({ transactions }: CategoryChartProps) {
             </ResponsiveContainer>
             <div className="donut-center" aria-hidden="true">
               <span>Spent</span>
-              <b>{formatCurrency(total)}</b>
+              <b title={formatCurrency(total)}>{formatCurrencyShort(total)}</b>
             </div>
           </div>
           <ul className="legend">

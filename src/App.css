@@ -112,10 +112,11 @@
 }
 
 /* ---------- summary ---------- */
+/* Balance on its own row, income and spent beneath: long amounts (Ksh 1,250,000.00) never collide. */
 .summary {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 4px 32px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
   padding: 24px;
 }
 
@@ -140,8 +141,9 @@
 
 .summary-split {
   display: flex;
-  gap: 32px;
-  align-self: end;
+  flex-wrap: wrap;
+  gap: 8px 40px;
+  margin-top: 14px;
 }
 
 .summary-split dt {
@@ -408,7 +410,19 @@ input[type='number'] {
 }
 
 .input-affix .input {
-  padding-left: 26px;
+  /* room for the currency symbol ("Ksh", "$", "USh") plus a gap */
+  padding-left: calc(20px + var(--affix, 1ch));
+}
+
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.currency-select {
+  width: auto;
+  font-weight: 600;
 }
 
 .add-form {
@@ -747,12 +761,6 @@ input[type='number'] {
 @media (max-width: 720px) {
   .charts {
     grid-template-columns: 1fr;
-  }
-  .summary {
-    grid-template-columns: 1fr;
-  }
-  .summary-split {
-    margin-top: 12px;
   }
 }
 
