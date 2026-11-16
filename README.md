@@ -11,6 +11,8 @@ A budget tracking application built with React, TypeScript, and Vite. Track inco
 - **Search, filter & sort** — find transactions by description, category, type, or sort by date/amount
 - **Charts** — spending-by-category breakdown and a monthly income-vs-expense trend
 - **CSV export/import** — back up your data or bring in transactions from elsewhere
+- **Undo** for deletes and imports, and a two-step "delete all" so nothing disappears by accident
+- **Grouped by day**, with a balance card that shows how much of your income you have spent
 - **Persistent storage** — data is saved in your browser via `localStorage`, with automatic migration from the original data format
 - **Type-safe** — the whole app is written in TypeScript
 - **Tested** — core filtering/sorting and CSV logic have unit tests

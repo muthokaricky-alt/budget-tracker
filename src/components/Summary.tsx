@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import type { Transaction } from '../types'
 import { formatCurrency } from '../lib/format'
-import './Summary.css'
 
 interface SummaryProps {
   transactions: Transaction[]
@@ -13,28 +12,47 @@ function Summary({ transactions }: SummaryProps) {
     let expense = 0
     for (const t of transactions) {
       if (t.amount > 0) income += t.amount
-      else expense += t.amount
+      else expense += Math.abs(t.amount)
     }
-    return { total: income + expense, income, expense }
+    return { balance: income - expense, income, expense }
   }, [transactions])
 
+  const spentShare =
+    metrics.income > 0 ? Math.min(1, metrics.expense / metrics.income) : metrics.expense > 0 ? 1 : 0
+
   return (
-    <section className="summary" aria-label="Financial summary">
-      <div className="summary-balance">
-        <span className="summary-label">Balance</span>
-        <span className="summary-value">{formatCurrency(metrics.total)}</span>
+    <section className="summary" aria-label="Summary">
+      <div className="summary-main">
+        <h2 className="summary-label">Balance</h2>
+        <p className={`summary-balance${metrics.balance < 0 ? ' is-negative' : ''}`}>
+          {formatCurrency(metrics.balance)}
+        </p>
       </div>
-      <div className="summary-metrics">
-        <div className="metric">
-          <span className="metric-label">Income</span>
-          <span className="metric-value metric-income">{formatCurrency(metrics.income)}</span>
+      <dl className="summary-split">
+        <div>
+          <dt>Income</dt>
+          <dd className="amount-income">{formatCurrency(metrics.income)}</dd>
         </div>
-        <div className="metric-divider" />
-        <div className="metric">
-          <span className="metric-label">Expenses</span>
-          <span className="metric-value metric-expense">{formatCurrency(Math.abs(metrics.expense))}</span>
+        <div>
+          <dt>Spent</dt>
+          <dd>{formatCurrency(metrics.expense)}</dd>
         </div>
+      </dl>
+      <div
+        className="spent-meter"
+        role="meter"
+        aria-label="Share of income spent"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(spentShare * 100)}
+      >
+        <span style={{ transform: `scaleX(${spentShare})` }} />
       </div>
+      <p className="summary-note">
+        {metrics.income > 0
+          ? `${Math.round(spentShare * 100)}% of income spent`
+          : 'Add income to see how much of it you spend'}
+      </p>
     </section>
   )
 }
